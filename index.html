@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - Game System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        button {
+            padding: 0.75rem;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #28a745;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            min-width: 80px;
+            background: #f8f9fa;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab.active {
+            border-bottom-color: #28a745;
+            color: #28a745;
+            font-weight: bold;
+            background: white;
+        }
+
+        .message {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 4px solid #28a745;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .coin-display {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 1rem 0;
+            border: 2px solid #FFC107;
+        }
+
+        .coin-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 0.5rem;
+        }
+
+        .history-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-win {
+            border-left: 4px solid #28a745;
+            background: #f8fff9;
+        }
+
+        .history-loss {
+            border-left: 4px solid #dc3545;
+            background: #fff8f8;
+        }
+
+        .history-load {
+            border-left: 4px solid #17a2b8;
+            background: #f8fdff;
+        }
+
+        .history-withdraw {
+            border-left: 4px solid #ffc107;
+            background: #fffdf4;
+        }
+
+        .game-list {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .game-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-2px);
+            border-color: #28a745;
+        }
+
+        .game-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .bet-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .bet-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .bet-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .home-btn {
+            background: #17a2b8;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .home-btn:hover {
+            background: #138496;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            width: auto;
+        }
+
+        .coin-package {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .coin-package:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .coin-package.selected {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .package-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .package-savings {
+            color: #dc3545;
+            font-size: 0.9rem;
+        }
+
+        .payment-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .payment-option.selected {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: #e9ecef;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .countdown {
+            font-size: 0.9rem;
+            color: #dc3545;
+            font-weight: bold;
+            background: #fff3cd;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+
+        /* Registration Section Styles */
+        .register-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 2px dashed #17a2b8;
+        }
+
+        .register-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #17a2b8;
+            font-size: 1.2rem;
+        }
+
+        /* Account Level Badge Styles */
+        .account-level-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .level-demo {
+            background: #6c757d;
+            color: white;
+        }
+
+        .level-trial {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .level-regular {
+            background: #28a745;
+            color: white;
+        }
+
+        .level-premium {
+            background: #007bff;
+            color: white;
+        }
+
+        .level-admin {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Offer Box Styles */
+        .offer-box {
+            background: linear-gradient(135deg, #ffc107, #ff8c00);
+            color: #000;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 2px solid #ffc107;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .offer-item {
+            background: rgba(255,255,255,0.9);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            border-left: 4px solid #28a745;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .offer-item:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.95);
+        }
+
+        .offer-unread {
+            border-left: 4px solid #dc3545;
+            background: rgba(255,255,255,0.95);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        .offer-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .offer-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .offer-reward {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .offer-date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Withdrawal Fee Styles */
+        .fee-info {
+            background: #e7f3ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .fee-breakdown {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.25rem 0;
+        }
+
+        .fee-total {
+            border-top: 2px solid #dee2e6;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .fee-charge {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Spin Wheel Styles */
+        .wheel-container {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            position: relative;
+            transition: transform 3s cubic-bezier(0.2, 0.8, 0.3, 1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #dc3545;
+            z-index: 10;
+        }
+
+        .wheel-section {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 1.2rem;
+        }
+
+        .wheel-result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #28a745;
+        }
+
+        .wheel-prizes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .prize-item {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+        }
+
+        .prize-multiplier {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .prize-0x { color: #dc3545; }
+        .prize-1x { color: #28a745; }
+        .prize-2x { color: #ffc107; }
+        .prize-3x { color: #007bff; }
+        .prize-4x { color: #e83e8c; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: auto;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .fee-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .wheel-prizes {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- User Login -->
+    <div id="userLoginPage" class="container">
+        <h2 style="text-align: center; margin-bottom: 1rem; color: #28a745;">👤 User Login</h2>
+        
+        <div id="userMessage" class="message"></div>
+        
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" id="userUsername" placeholder="Enter username">
+        </div>
+        
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="userPassword" placeholder="Enter password">
+        </div>
+        
+        <button onclick="userLogin()" class="btn-primary" style="width: 100%;">Login</button>
+
+        <!-- Registration Section -->
+        <div class="register-section">
+            <div class="register-title">📝 Create New Account</div>
+            
+            <div class="form-group">
+                <label>New Username:</label>
+                <input type="text" id="newUserUsername" placeholder="Choose username (min 3 chars)">
+            </div>
+            
+            <div class="form-group">
+                <label>New Password:</label>
+                <input type="password" id="newUserPassword" placeholder="Choose password (min 4 chars)">
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm Password:</label>
+                <input type="password" id="confirmUserPassword" placeholder="Confirm password">
+            </div>
+            
+            <button onclick="registerUser()" class="btn-success" style="width: 100%;">Create Account</button>
+        </div>
+
+        <button onclick="goToHome()" class="home-btn">🏠 Home</button>
+        
+        <div style="text-align: center; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 5px;">
+            <small><strong>Demo Accounts:</strong><br>
+            admin / admin123 (Admin)<br>
+            john / password123 (Regular)</small>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="userDashboard" class="container hidden">
+        <h2 style="text-align: center; margin-bottom: 1rem; color: #28a745;">👤 User Dashboard</h2>
+        <div id="userWelcome" style="text-align: center; margin-bottom: 1rem; font-size: 1.2rem;"></div>
+        
+        <!-- Offer Box -->
+        <div id="offerBox" class="offer-box hidden">
+            <div class="offer-badge" id="offerCount">0</div>
+            <h4 style="margin-bottom: 0.5rem;">🎁 Special Offers</h4>
+            <div id="offersList">
+                <!-- Offers will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Coin Display -->
+        <div class="coin-display">
+            <div>💰 Your Coins</div>
+            <div class="coin-amount" id="userCoins">0</div>
+            <div style="margin-top: 0.5rem;">
+                <button onclick="showUserTab('loadCoins')" class="btn-warning btn-small">📥 Load Coins</button>
+                <button onclick="showUserTab('withdraw')" class="btn-info btn-small">📤 Withdraw</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showUserTab('games')">🎮 Games</div>
+            <div class="tab" onclick="showUserTab('history')">📊 History</div>
+            <div class="tab" onclick="showUserTab('loadCoins')">📥 Load Coins</div>
+            <div class="tab" onclick="showUserTab('withdraw')">📤 Withdraw</div>
+            <div class="tab" onclick="showUserTab('transactions')">🎫 Transactions</div>
+            <div class="tab" onclick="showUserTab('profile')">👤 Profile</div>
+            <div class="tab" onclick="showUserTab('changePass')">🔒 Security</div>
+        </div>
+
+        <!-- Games Tab -->
+        <div id="userGamesTab">
+            <div class="game-list">
+                <div class="game-card" onclick="startGame('coinFlip')">
+                    <div class="game-icon">🎲</div>
+                    <h3>Coin Flip</h3>
+                    <p>Heads or Tails - Double or Nothing!</p>
+                    <small>Bet: 10-100 coins</small>
+                </div>
+                
+                <div class="game-card" onclick="startGame('diceRoll')">
+                    <div class="game-icon">🎯</div>
+                    <h3>Dice Roll</h3>
+                    <p>Roll higher than 3 to win!</p>
+                    <small>Bet: 20-200 coins</small>
+                </div>
+                
+                <div class="game-card" onclick="startGame('numberGuess')">
+                    <div class="game-icon">🔢</div>
+                    <h3>Number Guess</h3>
+                    <p>Guess the number between 1-10!</p>
+                    <small>Bet: 5-50 coins</small>
+                </div>
+
+                <!-- NEW: Spin Wheel Game Card -->
+                <div class="game-card" onclick="startGame('spinWheel')">
+                    <div class="game-icon">🎡</div>
+                    <h3>Spin Wheel</h3>
+                    <p>Spin to win multipliers!</p>
+                    <small>Bet: 50-500 coins</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="userHistoryTab" class="hidden">
+            <div class="history-list" id="userHistoryList">
+                <!-- History will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Load Coins Tab -->
+        <div id="userLoadCoinsTab" class="hidden">
+            <div id="loadCoinsMessage" class="message"></div>
+            
+            <h4 style="margin-bottom: 1rem;">💰 Choose Coin Package</h4>
+            <div id="coinPackagesList">
+                <!-- Coin packages will be loaded here -->
+            </div>
+
+            <h4 style="margin-bottom: 1rem; margin-top: 1.5rem;">💳 Select Payment Method</h4>
+            <div id="paymentMethodsList">
+                <!-- Payment methods will be loaded here -->
+            </div>
+
+            <div id="paymentDetails" class="hidden">
+                <div class="qr-code">
+                    <h5>Scan QR Code to Pay</h5>
+                    <div class="qr-placeholder" id="qrCodeDisplay">
+                        <!-- QR Code will be displayed here -->
+                    </div>
+                    <p><strong>Number:</strong> <span id="paymentNumber"></span></p>
+                    <p><strong>Amount:</strong> Rs. <span id="paymentAmount"></span></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Transaction ID (from payment app):</label>
+                    <input type="text" id="transactionId" placeholder="Enter transaction ID">
+                </div>
+
+                <div class="form-group">
+                    <label>Screenshot (optional - max 2MB):</label>
+                    <input type="file" id="paymentScreenshot" accept="image/*">
+                </div>
+
+                <button onclick="submitLoadRequest()" class="btn-success" style="width: 100%;">📥 Submit Load Request</button>
+            </div>
+        </div>
+
+        <!-- Withdraw Tab -->
+        <div id="userWithdrawTab" class="hidden">
+            <div id="withdrawMessage" class="message"></div>
+            
+            <div class="fee-info">
+                <h5 style="margin-bottom: 0.5rem; color: #007bff;">💡 Withdrawal Information</h5>
+                <p style="margin: 0; font-size: 0.9rem;">
+                    <strong>Maintenance Fee:</strong> 5% of withdrawal amount<br>
+                    <strong>Minimum Withdrawal:</strong> 100 coins<br>
+                    <strong>Maximum Withdrawal:</strong> 10,000 coins
+                </p>
+            </div>
+            
+            <div class="form-group">
+                <label>Amount to Withdraw:</label>
+                <input type="number" id="withdrawAmount" placeholder="Enter amount" min="100" max="10000" oninput="calculateWithdrawalFee()">
+            </div>
+
+            <!-- Fee Breakdown -->
+            <div id="feeBreakdown" class="fee-breakdown hidden">
+                <h6 style="margin-bottom: 0.5rem; color: #333;">💸 Withdrawal Breakdown</h6>
+                <div class="fee-row">
+                    <span>Withdrawal Amount:</span>
+                    <span id="withdrawalAmountDisplay">0 coins</span>
+                </div>
+                <div class="fee-row">
+                    <span>Maintenance Fee (5%):</span>
+                    <span class="fee-charge" id="maintenanceFee">0 coins</span>
+                </div>
+                <div class="fee-row fee-total">
+                    <span>You Will Receive:</span>
+                    <span id="netAmount">0 coins</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Withdraw Method:</label>
+                <select id="withdrawMethod">
+                    <option value="">Select method</option>
+                    <option value="esewa">eSewa</option>
+                    <option value="khalti">Khalti</option>
+                    <option value="bank">Bank Transfer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Account Details (Phone/Account Number):</label>
+                <input type="text" id="accountDetails" placeholder="Enter your account/phone number">
+            </div>
+
+            <div id="withdrawCountdown" class="countdown hidden">
+                ⏰ Time remaining: <span id="countdownTimer">02:00:00</span>
+            </div>
+
+            <button onclick="requestWithdrawCoins()" class="btn-info" style="width: 100%;">📤 Request Withdraw</button>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 5px;">
+                <small>💡 <strong>Note:</strong> Withdraw requests expire in 2 hours. Make sure your account details are correct.</small>
+            </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="userTransactionsTab" class="hidden">
+            <h4 style="margin-bottom: 1rem;">🎫 Your Transactions</h4>
+            <div class="history-list" id="userTransactionsList">
+                <!-- User transactions will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="userProfileTab" class="hidden">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" id="displayUsername" readonly>
+            </div>
+            <div class="form-group">
+                <label>Account Level:</label>
+                <input type="text" id="accountLevel" readonly>
+            </div>
+            <div class="form-group">
+                <label>Account Created:</label>
+                <input type="text" id="accountCreated" readonly>
+            </div>
+            <div class="form-group">
+                <label>Last Login:</label>
+                <input type="text" id="lastLogin" readonly>
+            </div>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalWins">0</div>
+                    <div>Total Wins</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalLosses">0</div>
+                    <div>Total Losses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Tab -->
+        <div id="userChangePassTab" class="hidden">
+            <div id="userPassMessage" class="message"></div>
+            <div class="form-group">
+                <label>Current Password:</label>
+                <input type="password" id="currentPassword" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+                <label>New Password:</label>
+                <input type="password" id="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+                <label>Confirm New Password:</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+            </div>
+            <button onclick="changeUserPassword()" class="btn-success" style="width: 100%;">Change Password</button>
+        </div>
+
+        <button onclick="userLogout()" class="logout-btn">Logout</button>
+    </div>
+
+    <!-- Game Modals -->
+    <div id="gameModal" class="game-modal hidden">
+        <div class="game-content">
+            <h3 id="gameTitle" style="text-align: center;">Game</h3>
+            <div id="gameMessage" class="message"></div>
+            
+            <div id="coinFlipGame" class="hidden">
+                <p>Choose Heads or Tails:</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
+                    <button onclick="playCoinFlip('heads')" class="btn-primary">Heads</button>
+                    <button onclick="playCoinFlip('tails')" class="btn-secondary">Tails</button>
+                </div>
+            </div>
+            
+            <div id="diceRollGame" class="hidden">
+                <p>Roll the dice! Win if you get 4-6:</p>
+                <button onclick="playDiceRoll()" class="btn-primary" style="width: 100%;">Roll Dice</button>
+            </div>
+            
+            <div id="numberGuessGame" class="hidden">
+                <p>Guess a number between 1-10:</p>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin: 1rem 0;">
+                    <!-- Numbers 1-10 will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- NEW: Spin Wheel Game -->
+            <div id="spinWheelGame" class="hidden">
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="wheel">
+                        <!-- Wheel sections will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="wheel-result" id="wheelResult">
+                    Spin the wheel to see your prize!
+                </div>
+
+                <div class="wheel-prizes">
+                    <div class="prize-item">
+                        <div>0x Multiplier</div>
+                        <div class="prize-multiplier prize-0x">Lose Bet</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>1x Multiplier</div>
+                        <div class="prize-multiplier prize-1x">Break Even</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>0x Multiplier</div>
+                        <div class="prize-multiplier prize-0x">Lose Bet</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>2x Multiplier</div>
+                        <div class="prize-multiplier prize-2x">Win 2x</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>0x Multiplier</div>
+                        <div class="prize-multiplier prize-0x">Lose Bet</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>3x Multiplier</div>
+                        <div class="prize-multiplier prize-3x">Win 3x</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>0x Multiplier</div>
+                        <div class="prize-multiplier prize-0x">Lose Bet</div>
+                    </div>
+                    <div class="prize-item">
+                        <div>4x Multiplier</div>
+                        <div class="prize-multiplier prize-4x">Win 4x</div>
+                    </div>
+                </div>
+
+                <button onclick="spinWheel()" class="btn-warning" style="width: 100%;" id="spinButton">🎡 Spin Wheel!</button>
+            </div>
+            
+            <div class="bet-controls">
+                <button onclick="changeBet(-10)" class="bet-btn btn-secondary">-</button>
+                <div class="bet-amount" id="currentBet">50</div>
+                <button onclick="changeBet(10)" class="bet-btn btn-primary">+</button>
+            </div>
+            
+            <button onclick="closeGame()" class="btn-secondary" style="width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Get users and transactions from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let currentUser = null;
+        let currentGame = null;
+        let currentBet = 50;
+        let selectedPackage = null;
+        let selectedPayment = null;
+        let withdrawTimer = null;
+        let isSpinning = false;
+
+        // Withdrawal fee percentage
+        const WITHDRAWAL_FEE_PERCENTAGE = 5;
+
+        // Coin packages with pricing
+        const coinPackages = [
+            { coins: 100, price: 100, savings: "Standard" },
+            { coins: 200, price: 200, savings: "Standard" },
+            { coins: 500, price: 500, savings: "Standard" },
+            { coins: 1000, price: 1000, savings: "Standard" }
+        ];
+
+        // Payment methods - UPDATED with bank QR name "scanner.jpeg"
+        const paymentMethods = [
+            { id: 'bank', name: 'Bank Transfer', number: '1234567890', qr: 'scanner.jpeg' }
+        ];
+
+        // Account levels configuration
+        const accountLevels = {
+            'demo': { name: 'Demo Account', color: 'level-demo', coinsLimit: 500 },
+            'trial': { name: 'Trial Account', color: 'level-trial', coinsLimit: 1000 },
+            'regular': { name: 'Regular Account', color: 'level-regular', coinsLimit: 5000 },
+            'premium': { name: 'Premium Account', color: 'level-premium', coinsLimit: 10000 },
+            'admin': { name: 'Admin Account', color: 'level-admin', coinsLimit: 999999 }
+        };
+
+        // UPDATED: Spin Wheel prizes configuration with 0x, 1x, 0x, 2x, 0x, 3x, 0x, 4x pattern
+        const wheelPrizes = [
+            { multiplier: 0, label: "0x", color: "#dc3545", probability: 0.125 },    // Red
+            { multiplier: 1, label: "1x", color: "#28a745", probability: 0.125 },    // Green
+            { multiplier: 2, label: "2x", color: "#ffc107", probability: 0.125 },    // Yellow
+            { multiplier: 3, label: "3x", color: "#007bff", probability: 0.125 },    // Blue
+            { multiplier: 4, label: "4x", color: "#e83e8c", probability: 0.125 }     // Pink
+        ];
+
+        // Initialize demo users if not exists
+        function initializeDemoUsers() {
+            if (!users.admin) {
+                users.admin = {
+                    password: 'admin123',
+                    created: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    coins: 1000,
+                    history: [],
+                    accountLevel: 'admin',
+                    isAdmin: true
+                };
+            }
+            if (!users.john) {
+                users.john = {
+                    password: 'password123',
+                    created: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    coins: 500,
+                    history: [],
+                    accountLevel: 'regular'
+                };
+            }
+            saveUsers();
+        }
+
+        // Calculate withdrawal fee function
+        function calculateWithdrawalFee() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value) || 0;
+            const feeBreakdown = document.getElementById('feeBreakdown');
+            
+            if (amount >= 100) {
+                const maintenanceFee = Math.ceil(amount * (WITHDRAWAL_FEE_PERCENTAGE / 100));
+                const netAmount = amount - maintenanceFee;
+                
+                document.getElementById('withdrawalAmountDisplay').textContent = `${amount} coins`;
+                document.getElementById('maintenanceFee').textContent = `${maintenanceFee} coins`;
+                document.getElementById('netAmount').textContent = `${netAmount} coins`;
+                
+                feeBreakdown.classList.remove('hidden');
+            } else {
+                feeBreakdown.classList.add('hidden');
+            }
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            clearMessages();
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.innerHTML = '';
+                msg.className = 'message';
+            });
+        }
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `message ${type}`;
+        }
+
+        // User Registration Function
+        function registerUser() {
+            const username = document.getElementById('newUserUsername').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+            const confirmPassword = document.getElementById('confirmUserPassword').value;
+
+            if (!username || !password || !confirmPassword) {
+                showMessage('userMessage', 'Please fill all fields!', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                showMessage('userMessage', 'Username must be at least 3 characters!', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showMessage('userMessage', 'Password must be at least 4 characters!', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('userMessage', 'Passwords do not match!', 'error');
+                return;
+            }
+
+            if (users[username]) {
+                showMessage('userMessage', 'Username already exists!', 'error');
+                return;
+            }
+
+            // Create new user with demo account level by default
+            users[username] = {
+                password: password,
+                created: new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                coins: 100, // Starting bonus
+                history: [{
+                    type: 'load',
+                    description: 'Welcome bonus for new account',
+                    amount: 100,
+                    timestamp: new Date().toISOString()
+                }],
+                accountLevel: 'demo',
+                isAdmin: false,
+                offers: []
+            };
+
+            saveUsers();
+            showMessage('userMessage', `✅ Account created successfully! Welcome bonus: 100 coins.`, 'success');
+            
+            // Auto login after registration
+            document.getElementById('userUsername').value = username;
+            document.getElementById('userPassword').value = password;
+            
+            // Clear registration form
+            document.getElementById('newUserUsername').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('confirmUserPassword').value = '';
+        }
+
+        function userLogin() {
+            const username = document.getElementById('userUsername').value;
+            const password = document.getElementById('userPassword').value;
+
+            if (!username || !password) {
+                showMessage('userMessage', 'Please fill all fields!', 'error');
+                return;
+            }
+
+            // Allow ALL users (both regular and admin) to login in user page
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                users[username].lastLogin = new Date().toISOString();
+                saveUsers();
+                loadUserDashboard();
+                showPage('userDashboard');
+            } else {
+                showMessage('userMessage', 'Invalid username or password!', 'error');
+            }
+        }
+
+        function loadUserDashboard() {
+            const user = users[currentUser];
+            const levelConfig = accountLevels[user.accountLevel || 'regular'];
+            
+            document.getElementById('userWelcome').innerHTML = 
+                `🎉 Welcome, <strong>${currentUser}</strong>! 
+                 <span class="account-level-badge ${levelConfig.color}">${levelConfig.name}</span>`;
+            
+            document.getElementById('displayUsername').value = currentUser;
+            document.getElementById('accountLevel').value = levelConfig.name;
+            document.getElementById('accountCreated').value = new Date(user.created).toLocaleString();
+            document.getElementById('lastLogin').value = new Date(user.lastLogin).toLocaleString();
+            document.getElementById('userCoins').textContent = user.coins || 0;
+            
+            updateUserStats();
+            loadUserHistory();
+            loadUserTransactions();
+            loadCoinPackages();
+            loadPaymentMethods();
+            loadUserOffers();
+        }
+
+        // Load User Offers Function
+        function loadUserOffers() {
+            const user = users[currentUser];
+            const offersList = document.getElementById('offersList');
+            const offerBox = document.getElementById('offerBox');
+            const offerCount = document.getElementById('offerCount');
+            
+            if (!user.offers || user.offers.length === 0) {
+                offerBox.classList.add('hidden');
+                return;
+            }
+            
+            // Show offer box
+            offerBox.classList.remove('hidden');
+            
+            // Count unread offers
+            const unreadCount = user.offers.filter(offer => !offer.read).length;
+            offerCount.textContent = unreadCount;
+            
+            // Display offers (show only 3 latest)
+            const displayOffers = user.offers.slice(-3).reverse();
+            offersList.innerHTML = displayOffers.map(offer => {
+                const unreadClass = !offer.read ? 'offer-unread' : '';
+                return `
+                    <div class="offer-item ${unreadClass}" onclick="viewOffer(${offer.id})">
+                        <div class="offer-title">${offer.title}</div>
+                        <div class="offer-description">${offer.description}</div>
+                        ${offer.coins > 0 ? `<div class="offer-reward">+${offer.coins} coins reward!</div>` : ''}
+                        <div class="offer-date">${new Date(offer.timestamp).toLocaleDateString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewOffer(offerId) {
+            const user = users[currentUser];
+            const offer = user.offers.find(o => o.id === offerId);
+            
+            if (offer) {
+                // Mark as read
+                offer.read = true;
+                saveUsers();
+                
+                // Show offer details
+                let message = `🎁 ${offer.title}\n\n${offer.description}`;
+                if (offer.coins > 0) {
+                    message += `\n\n💰 You received ${offer.coins} coins!`;
+                }
+                
+                alert(message);
+                
+                // Reload offers to update unread count
+                loadUserOffers();
+                // Update coins display
+                document.getElementById('userCoins').textContent = user.coins || 0;
+            }
+        }
+
+        function showUserTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('#userDashboard .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show selected tab content
+            document.getElementById('userGamesTab').classList.add('hidden');
+            document.getElementById('userHistoryTab').classList.add('hidden');
+            document.getElementById('userProfileTab').classList.add('hidden');
+            document.getElementById('userChangePassTab').classList.add('hidden');
+            document.getElementById('userLoadCoinsTab').classList.add('hidden');
+            document.getElementById('userWithdrawTab').classList.add('hidden');
+            document.getElementById('userTransactionsTab').classList.add('hidden');
+            
+            document.getElementById('user' + tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Tab').classList.remove('hidden');
+            
+            // Reset selections when switching to load coins tab
+            if (tabName === 'loadCoins') {
+                resetLoadForm();
+            }
+        }
+
+        function loadCoinPackages() {
+            const packagesList = document.getElementById('coinPackagesList');
+            packagesList.innerHTML = coinPackages.map(pkg => `
+                <div class="coin-package" onclick="selectPackage(${pkg.coins})">
+                    <div style="font-size: 1.2rem; font-weight: bold;">${pkg.coins} Coins</div>
+                    <div class="package-price">Rs. ${pkg.price}</div>
+                    <div class="package-savings">${pkg.savings}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadPaymentMethods() {
+            const methodsList = document.getElementById('paymentMethodsList');
+            methodsList.innerHTML = paymentMethods.map(method => `
+                <div class="payment-option" onclick="selectPayment('${method.id}')">
+                    <div style="font-weight: bold;">${method.name}</div>
+                    <div style="font-size: 0.9rem; color: #666;">Number: ${method.number}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectPackage(coins) {
+            selectedPackage = coinPackages.find(pkg => pkg.coins === coins);
+            
+            // Update UI
+            document.querySelectorAll('.coin-package').forEach(pkg => {
+                pkg.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Show payment details if payment method is also selected
+            if (selectedPayment) {
+                showPaymentDetails();
+            }
+        }
+
+        function selectPayment(methodId) {
+            selectedPayment = paymentMethods.find(method => method.id === methodId);
+            
+            // Update UI
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Show payment details if package is also selected
+            if (selectedPackage) {
+                showPaymentDetails();
+            }
+        }
+
+        function showPaymentDetails() {
+            if (selectedPackage && selectedPayment) {
+                document.getElementById('paymentDetails').classList.remove('hidden');
+                document.getElementById('paymentNumber').textContent = selectedPayment.number;
+                document.getElementById('paymentAmount').textContent = selectedPackage.price;
+                
+                // UPDATED: Display the bank QR image
+                const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+                if (selectedPayment.qr === 'scanner.jpeg') {
+                    qrCodeDisplay.innerHTML = '<img src="scanner.jpeg" alt="Bank QR Code" style="width: 150px; height: 150px; border-radius: 10px;">';
+                } else {
+                    qrCodeDisplay.textContent = `${selectedPayment.name} QR`;
+                }
+            }
+        }
+
+        function resetLoadForm() {
+            selectedPackage = null;
+            selectedPayment = null;
+            document.querySelectorAll('.coin-package').forEach(pkg => {
+                pkg.classList.remove('selected');
+            });
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('paymentDetails').classList.add('hidden');
+            document.getElementById('transactionId').value = '';
+            document.getElementById('paymentScreenshot').value = '';
+        }
+
+        function submitLoadRequest() {
+            if (!selectedPackage || !selectedPayment) {
+                showMessage('loadCoinsMessage', 'Please select both package and payment method!', 'error');
+                return;
+            }
+
+            const transactionId = document.getElementById('transactionId').value.trim();
+            if (!transactionId) {
+                showMessage('loadCoinsMessage', 'Please enter transaction ID!', 'error');
+                return;
+            }
+
+            // Create transaction
+            const transactionNumber = transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
+            const transaction = {
+                id: transactionNumber,
+                username: currentUser,
+                type: 'load',
+                amount: selectedPackage.coins,
+                amountPaid: selectedPackage.price,
+                paymentMethod: selectedPayment.name,
+                transactionId: transactionId,
+                status: 'pending',
+                timestamp: new Date().toISOString()
+            };
+
+            // Handle screenshot if uploaded
+            const screenshotFile = document.getElementById('paymentScreenshot').files[0];
+            if (screenshotFile) {
+                // Validate file size (max 2MB to prevent localStorage issues)
+                if (screenshotFile.size > 2 * 1024 * 1024) {
+                    showMessage('loadCoinsMessage', 'Screenshot too large! Please select image under 2MB.', 'error');
+                    return;
+                }
+                
+                // Validate file type
+                if (!screenshotFile.type.startsWith('image/')) {
+                    showMessage('loadCoinsMessage', 'Please select a valid image file!', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Compress image to reduce size
+                    compressImage(e.target.result, 0.7, function(compressedData) {
+                        transaction.paymentScreenshot = compressedData;
+                        completeLoadRequest(transaction);
+                    });
+                };
+                reader.onerror = function() {
+                    showMessage('loadCoinsMessage', 'Error reading screenshot file!', 'error');
+                };
+                reader.readAsDataURL(screenshotFile);
+            } else {
+                completeLoadRequest(transaction);
+            }
+        }
+
+        // Image compression function to reduce file size
+        function compressImage(dataUrl, quality, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions (max width 800px to reduce size)
+                const maxWidth = 800;
+                const scaleSize = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scaleSize;
+                
+                // Draw and compress image
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                callback(compressedDataUrl);
+            };
+            img.onerror = function() {
+                // If compression fails, use original but warn about size
+                console.warn('Image compression failed, using original');
+                callback(dataUrl);
+            };
+            img.src = dataUrl;
+        }
+
+        function completeLoadRequest(transaction) {
+            // Validate transaction data size before saving
+            const transactionSize = JSON.stringify(transaction).length;
+            if (transactionSize > 500000) { // 500KB limit
+                showMessage('loadCoinsMessage', 'Screenshot too large even after compression! Please try a smaller image.', 'error');
+                return;
+            }
+
+            transactions.push(transaction);
+            saveTransactions();
+            
+            showMessage('loadCoinsMessage', `📥 Load request submitted! Ticket #${transaction.id}. Waiting for admin approval.`, 'success');
+            
+            // Reset form
+            resetLoadForm();
+            
+            // Update transactions list
+            loadUserTransactions();
+        }
+
+        // Withdraw function with 5% maintenance fee
+        function requestWithdrawCoins() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const withdrawMethod = document.getElementById('withdrawMethod').value;
+            const accountDetails = document.getElementById('accountDetails').value.trim();
+            const user = users[currentUser];
+            
+            if (!amount || amount < 100 || amount > 10000) {
+                showMessage('withdrawMessage', 'Please enter amount between 100-10000', 'error');
+                return;
+            }
+
+            if (!withdrawMethod) {
+                showMessage('withdrawMessage', 'Please select withdraw method!', 'error');
+                return;
+            }
+
+            if (!accountDetails) {
+                showMessage('withdrawMessage', 'Please enter account details!', 'error');
+                return;
+            }
+            
+            // Calculate maintenance fee and net amount
+            const maintenanceFee = Math.ceil(amount * (WITHDRAWAL_FEE_PERCENTAGE / 100));
+            const totalDeduction = amount + maintenanceFee;
+            
+            if (user.coins < totalDeduction) {
+                showMessage('withdrawMessage', `Not enough coins! You need ${totalDeduction} coins (${amount} + ${maintenanceFee} fee)`, 'error');
+                return;
+            }
+
+            // Create transaction with 2-hour expiry
+            const transactionNumber = transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
+            const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours from now
+            
+            const transaction = {
+                id: transactionNumber,
+                username: currentUser,
+                type: 'withdraw',
+                amount: amount,
+                maintenanceFee: maintenanceFee,
+                totalDeduction: totalDeduction,
+                withdrawMethod: withdrawMethod,
+                accountDetails: accountDetails,
+                status: 'pending',
+                timestamp: new Date().toISOString(),
+                expiresAt: expiresAt.toISOString()
+            };
+            
+            transactions.push(transaction);
+            saveTransactions();
+            
+            showMessage('withdrawMessage', `📤 Withdraw request submitted! Ticket #${transactionNumber}. You will receive ${amount} coins (${maintenanceFee} coins fee). Expires in 2 hours.`, 'success');
+            
+            // Clear form
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawMethod').value = '';
+            document.getElementById('accountDetails').value = '';
+            document.getElementById('feeBreakdown').classList.add('hidden');
+            
+            // Update transactions list
+            loadUserTransactions();
+        }
+
+        function updateUserStats() {
+            const user = users[currentUser];
+            const wins = user.history ? user.history.filter(h => h.type === 'win').length : 0;
+            const losses = user.history ? user.history.filter(h => h.type === 'loss').length : 0;
+            
+            document.getElementById('totalWins').textContent = wins;
+            document.getElementById('totalLosses').textContent = losses;
+        }
+
+        function loadUserHistory() {
+            const historyList = document.getElementById('userHistoryList');
+            const user = users[currentUser];
+            
+            if (!user.history || user.history.length === 0) {
+                historyList.innerHTML = '<div class="history-item">No history yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = user.history.slice(-10).reverse().map(entry => {
+                const icon = entry.type === 'win' ? '💰' : 
+                            entry.type === 'loss' ? '😞' : 
+                            entry.type === 'load' ? '📥' :
+                            entry.type === 'withdraw' ? '📤' : '🔄';
+                const cls = entry.type === 'win' ? 'history-win' : 
+                           entry.type === 'loss' ? 'history-loss' : 
+                           entry.type === 'load' ? 'history-load' :
+                           entry.type === 'withdraw' ? 'history-withdraw' : 'history-load';
+                
+                let amountDisplay = '';
+                if (entry.type === 'withdraw' && entry.maintenanceFee) {
+                    amountDisplay = `-${entry.amount} (Fee: ${entry.maintenanceFee})`;
+                } else {
+                    amountDisplay = `${entry.type === 'win' ? '+' : entry.type === 'loss' ? '-' : '+'}${entry.amount}`;
+                }
+                
+                return `
+                    <div class="history-item ${cls}">
+                        <div>
+                            <strong>${icon} ${entry.description}</strong><br>
+                            <small>${new Date(entry.timestamp).toLocaleString()}</small>
+                        </div>
+                        <div style="font-weight: bold; color: ${entry.type === 'win' ? '#28a745' : entry.type === 'loss' ? '#dc3545' : entry.type === 'withdraw' ? '#ffc107' : '#17a2b8'}">
+                            ${amountDisplay}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadUserTransactions() {
+            const transactionsList = document.getElementById('userTransactionsList');
+            if (!transactionsList) return;
+            
+            const userTransactions = transactions.filter(t => t.username === currentUser);
+            
+            if (userTransactions.length === 0) {
+                transactionsList.innerHTML = '<div class="history-item">No transactions yet</div>';
+                return;
+            }
+            
+            transactionsList.innerHTML = userTransactions.slice(-10).reverse().map(transaction => {
+                const typeIcon = transaction.type === 'load' ? '📥' : '📤';
+                const statusIcon = transaction.status === 'pending' ? '⏳' : 
+                                 transaction.status === 'approved' ? '✅' : '❌';
+                const statusColor = transaction.status === 'pending' ? '#ffc107' : 
+                                  transaction.status === 'approved' ? '#28a745' : '#dc3545';
+                
+                let details = '';
+                if (transaction.type === 'load') {
+                    details = ` | Rs. ${transaction.amountPaid} | ${transaction.paymentMethod}`;
+                } else if (transaction.type === 'withdraw') {
+                    details = ` | ${transaction.withdrawMethod}`;
+                    if (transaction.maintenanceFee) {
+                        details += ` | Fee: ${transaction.maintenanceFee} coins`;
+                    }
+                    if (transaction.expiresAt && transaction.status === 'pending') {
+                        const expires = new Date(transaction.expiresAt);
+                        if (expires > new Date()) {
+                            details += ` | ⏰ ${Math.ceil((expires - new Date()) / (1000 * 60))}min`;
+                        } else {
+                            details += ' | ⏰ EXPIRED';
+                        }
+                    }
+                }
+                
+                return `
+                    <div class="history-item" style="border-left: 4px solid ${statusColor}">
+                        <div>
+                            <strong>${typeIcon} ${transaction.type.toUpperCase()} - ${statusIcon} ${transaction.status.toUpperCase()}</strong><br>
+                            <small>Ticket #${transaction.id} | Amount: ${transaction.amount} coins${details}</small><br>
+                            <small>Requested: ${new Date(transaction.timestamp).toLocaleString()}</small>
+                            ${transaction.processedAt ? `<br><small>Processed: ${new Date(transaction.processedAt).toLocaleString()}</small>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Game Functions
+        function startGame(gameType) {
+            currentGame = gameType;
+            currentBet = 50;
+            document.getElementById('currentBet').textContent = currentBet;
+            document.getElementById('gameMessage').innerHTML = '';
+            
+            // Hide all games
+            document.getElementById('coinFlipGame').classList.add('hidden');
+            document.getElementById('diceRollGame').classList.add('hidden');
+            document.getElementById('numberGuessGame').classList.add('hidden');
+            document.getElementById('spinWheelGame').classList.add('hidden');
+            
+            // Show selected game
+            if (gameType === 'coinFlip') {
+                document.getElementById('gameTitle').textContent = '🎲 Coin Flip';
+                document.getElementById('coinFlipGame').classList.remove('hidden');
+            } else if (gameType === 'diceRoll') {
+                document.getElementById('gameTitle').textContent = '🎯 Dice Roll';
+                document.getElementById('diceRollGame').classList.remove('hidden');
+            } else if (gameType === 'numberGuess') {
+                document.getElementById('gameTitle').textContent = '🔢 Number Guess';
+                document.getElementById('numberGuessGame').classList.remove('hidden');
+                setupNumberGuess();
+            } else if (gameType === 'spinWheel') {
+                document.getElementById('gameTitle').textContent = '🎡 Spin Wheel';
+                document.getElementById('spinWheelGame').classList.remove('hidden');
+                setupSpinWheel();
+            }
+            
+            document.getElementById('gameModal').classList.remove('hidden');
+        }
+
+        function closeGame() {
+            document.getElementById('gameModal').classList.add('hidden');
+            isSpinning = false;
+        }
+
+        function changeBet(amount) {
+            const user = users[currentUser];
+            const newBet = currentBet + amount;
+            const minBet = currentGame === 'coinFlip' ? 10 : 
+                          currentGame === 'diceRoll' ? 20 : 
+                          currentGame === 'numberGuess' ? 5 : 
+                          currentGame === 'spinWheel' ? 50 : 10;
+            const maxBet = currentGame === 'coinFlip' ? 100 : 
+                          currentGame === 'diceRoll' ? 200 : 
+                          currentGame === 'numberGuess' ? 50 : 
+                          currentGame === 'spinWheel' ? 500 : 100;
+            
+            if (newBet >= minBet && newBet <= maxBet && newBet <= user.coins) {
+                currentBet = newBet;
+                document.getElementById('currentBet').textContent = currentBet;
+            }
+        }
+
+        function playCoinFlip(choice) {
+            const user = users[currentUser];
+            if (user.coins < currentBet) {
+                showMessage('gameMessage', 'Not enough coins!', 'error');
+                return;
+            }
+
+            const result = Math.random() > 0.5 ? 'heads' : 'tails';
+            const win = choice === result;
+            
+            if (win) {
+                user.coins += currentBet;
+                showMessage('gameMessage', `🎉 You won! It was ${result}. +${currentBet} coins!`, 'success');
+                addHistoryEntry('win', `Won Coin Flip (${choice})`, currentBet);
+            } else {
+                user.coins -= currentBet;
+                showMessage('gameMessage', `😞 You lost! It was ${result}. -${currentBet} coins`, 'error');
+                addHistoryEntry('loss', `Lost Coin Flip (${choice})`, currentBet);
+            }
+            
+            saveUsers();
+            document.getElementById('userCoins').textContent = user.coins;
+        }
+
+        function playDiceRoll() {
+            const user = users[currentUser];
+            if (user.coins < currentBet) {
+                showMessage('gameMessage', 'Not enough coins!', 'error');
+                return;
+            }
+
+            const roll = Math.floor(Math.random() * 6) + 1;
+            const win = roll >= 4;
+            
+            if (win) {
+                user.coins += currentBet;
+                showMessage('gameMessage', `🎉 You rolled ${roll}! You win! +${currentBet} coins!`, 'success');
+                addHistoryEntry('win', `Won Dice Roll (${roll})`, currentBet);
+            } else {
+                user.coins -= currentBet;
+                showMessage('gameMessage', `😞 You rolled ${roll}. You lose! -${currentBet} coins`, 'error');
+                addHistoryEntry('loss', `Lost Dice Roll (${roll})`, currentBet);
+            }
+            
+            saveUsers();
+            document.getElementById('userCoins').textContent = user.coins;
+        }
+
+        function setupNumberGuess() {
+            const container = document.querySelector('#numberGuessGame div');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = 'btn-info';
+                btn.style.width = '100%';
+                btn.onclick = () => playNumberGuess(i);
+                container.appendChild(btn);
+            }
+        }
+
+        function playNumberGuess(guess) {
+            const user = users[currentUser];
+            if (user.coins < currentBet) {
+                showMessage('gameMessage', 'Not enough coins!', 'error');
+                return;
+            }
+
+            const number = Math.floor(Math.random() * 10) + 1;
+            const win = guess === number;
+            
+            if (win) {
+                user.coins += currentBet * 2;
+                showMessage('gameMessage', `🎉 Correct! It was ${number}. +${currentBet * 2} coins!`, 'success');
+                addHistoryEntry('win', `Won Number Guess (${guess})`, currentBet * 2);
+            } else {
+                user.coins -= currentBet;
+                showMessage('gameMessage', `😞 Wrong! It was ${number}. -${currentBet} coins`, 'error');
+                addHistoryEntry('loss', `Lost Number Guess (${guess})`, currentBet);
+            }
+            
+            saveUsers();
+            document.getElementById('userCoins').textContent = user.coins;
+        }
+
+        // UPDATED: Spin Wheel Game Functions with new pattern
+        function setupSpinWheel() {
+            const wheel = document.getElementById('wheel');
+            wheel.innerHTML = '';
+            
+            // Create wheel sections with the new pattern and colors
+            const sections = [
+                { label: "0x", color: "#dc3545" }, // Red
+                { label: "1x", color: "#28a745" }, // Green
+                { label: "0x", color: "#dc3545" }, // Red
+                { label: "2x", color: "#ffc107" }, // Yellow
+                { label: "0x", color: "#dc3545" }, // Red
+                { label: "3x", color: "#007bff" }, // Blue
+                { label: "0x", color: "#dc3545" }, // Red
+                { label: "4x", color: "#e83e8c" }  // Pink
+            ];
+            
+            // Create conic gradient for the wheel
+            let gradientStops = [];
+            const sectionAngle = 360 / sections.length;
+            
+            sections.forEach((section, index) => {
+                const startAngle = index * sectionAngle;
+                const endAngle = (index + 1) * sectionAngle;
+                gradientStops.push(`${section.color} ${startAngle}deg ${endAngle}deg`);
+            });
+            
+            wheel.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+            wheel.style.transform = 'rotate(0deg)';
+            
+            // Add section labels
+            sections.forEach((section, index) => {
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'wheel-section';
+                sectionElement.textContent = section.label;
+                sectionElement.style.transform = `rotate(${index * sectionAngle + sectionAngle/2}deg)`;
+                sectionElement.style.color = 'white';
+                sectionElement.style.textShadow = '1px 1px 2px rgba(0,0,0,0.8)';
+                wheel.appendChild(sectionElement);
+            });
+            
+            document.getElementById('wheelResult').textContent = 'Spin the wheel to see your prize!';
+            document.getElementById('spinButton').disabled = false;
+            isSpinning = false;
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            const user = users[currentUser];
+            if (user.coins < currentBet) {
+                showMessage('gameMessage', 'Not enough coins!', 'error');
+                return;
+            }
+
+            // Deduct bet amount
+            user.coins -= currentBet;
+            saveUsers();
+            document.getElementById('userCoins').textContent = user.coins;
+
+            isSpinning = true;
+            document.getElementById('spinButton').disabled = true;
+            document.getElementById('wheelResult').textContent = 'Spinning...';
+
+            // Select prize based on probability
+            const random = Math.random();
+            let cumulativeProbability = 0;
+            let selectedPrize = wheelPrizes[0];
+
+            for (const prize of wheelPrizes) {
+                cumulativeProbability += prize.probability;
+                if (random <= cumulativeProbability) {
+                    selectedPrize = prize;
+                    break;
+                }
+            }
+
+            // Calculate rotation (5 full rotations + prize position)
+            const fullRotations = 5;
+            const prizeIndex = wheelPrizes.indexOf(selectedPrize);
+            const sectionAngle = 360 / wheelPrizes.length;
+            const prizePosition = 360 - (prizeIndex * sectionAngle + sectionAngle / 2);
+            const totalRotation = fullRotations * 360 + prizePosition;
+
+            // Animate the wheel
+            const wheel = document.getElementById('wheel');
+            wheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.3, 1)';
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+
+            // Show result after animation
+            setTimeout(() => {
+                const winAmount = Math.round(currentBet * selectedPrize.multiplier);
+                
+                if (selectedPrize.multiplier > 0) {
+                    user.coins += winAmount;
+                    const netWin = winAmount - currentBet;
+                    
+                    if (selectedPrize.multiplier === 1) {
+                        showMessage('gameMessage', `🔄 Break even! You got your ${currentBet} coins back.`, 'info');
+                        addHistoryEntry('load', `Spin Wheel Break Even (1x)`, currentBet);
+                    } else {
+                        showMessage('gameMessage', `🎉 You won ${winAmount} coins (${selectedPrize.multiplier}x multiplier)! +${netWin} coins!`, 'success');
+                        addHistoryEntry('win', `Won Spin Wheel (${selectedPrize.multiplier}x)`, winAmount);
+                    }
+                } else {
+                    showMessage('gameMessage', `😞 You lost ${currentBet} coins (0x multiplier)`, 'error');
+                    addHistoryEntry('loss', `Lost Spin Wheel (0x)`, currentBet);
+                }
+
+                document.getElementById('wheelResult').innerHTML = `
+                    <strong>${selectedPrize.label} Multiplier!</strong><br>
+                    <small>You ${selectedPrize.multiplier > 0 ? 'won' : 'lost'} ${selectedPrize.multiplier > 0 ? Math.abs(winAmount - currentBet) : currentBet} coins</small>
+                `;
+
+                saveUsers();
+                document.getElementById('userCoins').textContent = user.coins;
+                document.getElementById('spinButton').disabled = false;
+                isSpinning = false;
+            }, 3000);
+        }
+
+        function addHistoryEntry(type, description, amount) {
+            if (!users[currentUser].history) {
+                users[currentUser].history = [];
+            }
+            
+            users[currentUser].history.push({
+                type: type,
+                description: description,
+                amount: amount,
+                timestamp: new Date().toISOString()
+            });
+            
+            saveUsers();
+            loadUserHistory();
+            updateUserStats();
+        }
+
+        function changeUserPassword() {
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (!currentPass || !newPass || !confirmPass) {
+                showMessage('userPassMessage', 'Please fill all fields!', 'error');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                showMessage('userPassMessage', 'New passwords do not match!', 'error');
+                return;
+            }
+
+            if (newPass.length < 4) {
+                showMessage('userPassMessage', 'Password must be at least 4 characters!', 'error');
+                return;
+            }
+
+            if (users[currentUser].password !== currentPass) {
+                showMessage('userPassMessage', 'Current password is incorrect!', 'error');
+                return;
+            }
+
+            users[currentUser].password = newPass;
+            saveUsers();
+            showMessage('userPassMessage', '✅ Password changed successfully!', 'success');
+            
+            // Clear fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        function userLogout() {
+            currentUser = null;
+            if (withdrawTimer) {
+                clearInterval(withdrawTimer);
+            }
+            showPage('userLoginPage');
+            // Clear login form
+            document.getElementById('userUsername').value = '';
+            document.getElementById('userPassword').value = '';
+        }
+
+        function goToHome() {
+            window.location.href = 'index.html';
+        }
+
+        function saveUsers() {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function saveTransactions() {
+            try {
+                // Check if transactions data is too large
+                const transactionsData = JSON.stringify(transactions);
+                if (transactionsData.length > 5000000) { // 5MB limit
+                    console.warn('Transactions data too large, clearing old screenshot data');
+                    // Remove screenshot data from old transactions to free space
+                    transactions.forEach(t => {
+                        if (t.paymentScreenshot && t.status !== 'pending') {
+                            delete t.paymentScreenshot;
+                        }
+                    });
+                }
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+            } catch (e) {
+                console.error('Error saving transactions:', e);
+                showMessage('loadCoinsMessage', 'Error saving transaction data. Please try again.', 'error');
+            }
+        }
+
+        // Initialize when page loads
+        initializeDemoUsers();
+        showPage('userLoginPage');
+    </script>
+</body>
+</html>
